@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'player_api'
+    'player_api',
+    'game_api',
 ]
 
 MIDDLEWARE_CLASSES = [

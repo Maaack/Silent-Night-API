@@ -2,24 +2,26 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from .models import Profile
-from .models.serializers import ProfileSerializer
+from .models import Player
+from .models.serializers import PlayerSerializer
 from silent_night.mixins.views import JSONResponse
 
 
+# Create your views here.
+
 @csrf_exempt
-def profile_list(request):
+def player_list(request):
     """
-    List all code profiles, or create a new profile.
+    List all code players, or create a new player.
     """
     if request.method == 'GET':
-        profiles = Profile.objects.all()
-        serializer = ProfileSerializer(profiles, many=True)
+        players = Player.objects.all()
+        serializer = PlayerSerializer(players, many=True)
         return JSONResponse(serializer.data)
 
     elif request.method == 'POST':
         data = JSONParser().parse(request)
-        serializer = ProfileSerializer(data=data)
+        serializer = PlayerSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return JSONResponse(serializer.data, status=201)
@@ -27,27 +29,27 @@ def profile_list(request):
     
     
 @csrf_exempt
-def profile_detail(request, pk):
+def player_detail(request, pk):
     """
-    Retrieve, update or delete a code Profile.
+    Retrieve, update or delete a code Player.
     """
     try:
-        profile = Profile.objects.get(pk=pk)
-    except Profile.DoesNotExist:
+        player = Player.objects.get(pk=pk)
+    except Player.DoesNotExist:
         return HttpResponse(status=404)
 
     if request.method == 'GET':
-        serializer = ProfileSerializer(Profile)
+        serializer = PlayerSerializer(Player)
         return JSONResponse(serializer.data)
 
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
-        serializer = ProfileSerializer(Profile, data=data)
+        serializer = PlayerSerializer(Player, data=data)
         if serializer.is_valid():
             serializer.save()
             return JSONResponse(serializer.data)
         return JSONResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
-        profile.delete()
+        player.delete()
         return HttpResponse(status=204)
