@@ -24,8 +24,8 @@ def profile_list(request):
     List all code profiles, or create a new profile.
     """
     if request.method == 'GET':
-        snippets = Profile.objects.all()
-        serializer = ProfileSerializer(snippets, many=True)
+        profiles = Profile.objects.all()
+        serializer = ProfileSerializer(profiles, many=True)
         return JSONResponse(serializer.data)
 
     elif request.method == 'POST':
@@ -35,3 +35,30 @@ def profile_list(request):
             serializer.save()
             return JSONResponse(serializer.data, status=201)
         return JSONResponse(serializer.errors, status=400)
+    
+    
+@csrf_exempt
+def profile_detail(request, pk):
+    """
+    Retrieve, update or delete a code Profile.
+    """
+    try:
+        profile = Profile.objects.get(pk=pk)
+    except Profile.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = ProfileSerializer(Profile)
+        return JSONResponse(serializer.data)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = ProfileSerializer(Profile, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JSONResponse(serializer.data)
+        return JSONResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        profile.delete()
+        return HttpResponse(status=204)
