@@ -3,5 +3,5 @@
 # Ignore IDE files
 .idea
 
-
+# Ignore local db files
 db.sqlite3
