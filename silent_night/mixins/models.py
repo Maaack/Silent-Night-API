@@ -1,7 +1,9 @@
 from django.db import models
 from django.utils.timezone import now
-from django.utils.translation import ugettext, ugettext_lazy as _
-from player_api.utils import get_user_model_name
+from django.utils.translation import ugettext_lazy as _
+
+from silent_night.utils import get_user_model_name
+
 
 user_model_name = get_user_model_name()
 
