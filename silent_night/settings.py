@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'profile_api',
     'game_api',
+    'numpy',
 ]
 
 MIDDLEWARE_CLASSES = [
