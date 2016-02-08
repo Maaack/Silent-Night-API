@@ -1,4 +1,6 @@
 import numpy
+import pymunk
+from .models import Space
 
 
 class Body(object):
@@ -13,46 +15,78 @@ class Body(object):
         Body.__nextId += 1
         return next_id
 
-    def __init__(self):
+    def __init__(self, space):
+        if type(space) is not Space:
+            raise TypeError
         self.__id = Body.next_id()
         self.time = 0.0
         self.mass = 0.0
-        self.vector = numpy.array([0, 0])
+        self.velocity = numpy.array([0, 0])
         self.acceleration = numpy.array([0, 0])
-        self.location = numpy.array([0, 0])
+        self.position = numpy.array([0, 0])
+        self.space = space
 
-    def updated_location(self, dtime=None):
+    def updated_position(self, dtime=None):
         if dtime is not None:
-            return self.location + (self.vector * dtime) + 0.5*(self.acceleration * (dtime ** 2))
+            return self.position + (self.velocity * dtime) + 0.5*(self.acceleration * (dtime ** 2))
         else:
-            return self.location
+            return self.position
 
     def update_position(self, dtime):
-        self.location = self.updated_location(dtime)
-        return self.location
+        self.position = self.updated_position(dtime)
+        return self.position
 
-    def updated_vector(self, dtime=None):
+    def updated_velocity(self, dtime=None):
         if dtime is not None:
-            return self.vector + (self.acceleration * dtime)
+            return self.velocity + (self.acceleration * dtime)
         else:
-            return self.vector
+            return self.velocity
 
-    def update_vector(self, dtime):
-        self.vector = self.updated_vector(dtime)
-        return self.vector
+    def update_velocity(self, dtime):
+        self.velocity = self.updated_velocity(dtime)
+        return self.velocity
+
+    def accelerate(self, acceleration, dtime):
+        self.velocity += acceleration * dtime
+        return self.velocity
+
+    def thrust(self, thrust):
+        pass
+
+    def get_force(self):
+        return self.mass * self.velocity
 
     def update(self, dtime):
         self.update_position(dtime)
-        self.update_vector(dtime)
+        self.update_velocity(dtime)
 
 
 class RoundBody(Body):
     class Meta:
         abstract = True
 
-    def __init__(self):
-        super(RoundBody, self).__init__()
-        self.radius = 0.0
+    def __init__(self, space, radius):
+        super(RoundBody, self).__init__(space)
+        self.radius = radius
+        inertia = pymunk.moment_for_circle(self.mass, 0, self.radius)
+        self.game_body = pymunk.Body(self.mass, inertia)
+        self.game_body.position = self.position
+        self.game_shape = pymunk.Circle(self.game_body, self.radius)
+        self.space.game_space.add(self.game_body, self.game_shape)
+
+
+class PolyBody(Body):
+    class Meta:
+        abstract = True
+
+    def __init__(self, space, vertices):
+        super(PolyBody, self).__init__(space)
+        self.vertices = vertices
+        inertia = pymunk.moment_for_poly(self.mass, self.vertices)
+        self.game_body = pymunk.Body(self.mass, inertia)
+        self.game_body.position = self.position
+        self.game_shape = pymunk.Poly(self.game_body, self.vertices)
+        self.space.game_space.add(self.game_body, self.game_shape)
 
 
 class Asteroid(RoundBody):

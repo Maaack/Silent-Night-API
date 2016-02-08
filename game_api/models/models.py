@@ -1,3 +1,4 @@
+import pymunk
 from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
 
@@ -56,6 +57,10 @@ class Space(TimeStamped):
     initial_snapshot = models.ForeignKey("Snapshot")
     settings = models.ForeignKey("SpaceSettings")
     seed = models.CharField(_("Random Seed"), max_length=50)
+
+    def __init__(self):
+        super(Space, self).__init__()
+        self.game_space = pymunk.Space()
 
 
 class SpaceSettings(Settings):

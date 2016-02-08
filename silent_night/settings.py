@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'profile_api',
     'game_api',
     'numpy',
+    'pymunk',
 ]
 
 MIDDLEWARE_CLASSES = [
