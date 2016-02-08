@@ -2,6 +2,10 @@
 
 # Ignore IDE files
 .idea
+.project
 
 # Ignore local db files
 db.sqlite3
+
+# Ignore local settings files
+local_settings.py
