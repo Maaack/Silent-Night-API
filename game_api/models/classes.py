@@ -15,15 +15,15 @@ class Body(object):
         Body.__nextId += 1
         return next_id
 
-    def __init__(self, space):
+    def __init__(self, space, mass=1.0, position=numpy.array([0, 0]), velocity=numpy.array([0, 0])):
         if type(space) is not Space:
             raise TypeError
         self.__id = Body.next_id()
         self.time = 0.0
-        self.mass = 0.0
-        self.velocity = numpy.array([0, 0])
+        self.mass = mass
+        self.position = position
+        self.velocity = velocity
         self.acceleration = numpy.array([0, 0])
-        self.position = numpy.array([0, 0])
         self.space = space
 
     def updated_position(self, dtime=None):
@@ -65,8 +65,8 @@ class RoundBody(Body):
     class Meta:
         abstract = True
 
-    def __init__(self, space, radius):
-        super(RoundBody, self).__init__(space)
+    def __init__(self, space, radius, mass=None, position=None, velocity=None):
+        super(RoundBody, self).__init__(space, mass, position, velocity)
         self.radius = radius
         inertia = pymunk.moment_for_circle(self.mass, 0, self.radius)
         self.game_body = pymunk.Body(self.mass, inertia)
@@ -79,8 +79,8 @@ class PolyBody(Body):
     class Meta:
         abstract = True
 
-    def __init__(self, space, vertices):
-        super(PolyBody, self).__init__(space)
+    def __init__(self, space, vertices, mass=None, position=None, velocity=None):
+        super(PolyBody, self).__init__(space, mass, position, velocity)
         self.vertices = vertices
         inertia = pymunk.moment_for_poly(self.mass, self.vertices)
         self.game_body = pymunk.Body(self.mass, inertia)
@@ -102,8 +102,8 @@ class Ship(Body):
         Ship.__nextShipId += 1
         return next_id
 
-    def __init__(self):
-        super(Ship, self).__init__()
+    def __init__(self, space):
+        super(Ship, self).__init__(space)
         self.ship_id = Ship.next_ship_id()
         self.name = None
         self.player = None
