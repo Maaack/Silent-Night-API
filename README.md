@@ -27,3 +27,10 @@ $ workon snapi                              # will activate virtual_env
 Django Based REST API
 
 Game stuff is in the `game_api` folder! All models that are persistent have schema's so they are stored in the database between requests. Everything else is python objects. The objects will need to be serialized so that they can be stored in a snapshot model to save the current state of the game world. Snapshots might need to be saved every couple of seconds so that the physics simulator doesn't have to simulate for huge leaps of time on each request.
+
+# Additional Resources
+Writing your first Django App Tutorials: https://docs.djangoproject.com/en/1.9/intro/tutorial01/
+Django REST framework Documentation: http://www.django-rest-framework.org/
+Pymunk Documentation: http://www.pymunk.org/en/latest/
+API Cheatsheet: https://github.com/RestCheatSheet/api-cheat-sheet#api-design-cheat-sheet
+REST API Quick Tips: http://www.restapitutorial.com/lessons/restquicktips.html
