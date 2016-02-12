@@ -30,7 +30,11 @@ Game stuff is in the `game_api` folder! All models that are persistent have sche
 
 # Additional Resources
 Writing your first Django App Tutorials: https://docs.djangoproject.com/en/1.9/intro/tutorial01/
+
 Django REST framework Documentation: http://www.django-rest-framework.org/
+
 Pymunk Documentation: http://www.pymunk.org/en/latest/
+
 API Cheatsheet: https://github.com/RestCheatSheet/api-cheat-sheet#api-design-cheat-sheet
+
 REST API Quick Tips: http://www.restapitutorial.com/lessons/restquicktips.html
