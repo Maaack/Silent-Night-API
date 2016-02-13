@@ -31,6 +31,9 @@ class Game(TimeStamped):
 
 
 class Settings(TimeStamped, Ownable):
+    """
+    Stores settings in a JSON object
+    """
     class Meta:
         abstract = True
         ordering = ["-created"]
@@ -43,23 +46,51 @@ class Settings(TimeStamped, Ownable):
 
 
 class GameSettings(Settings):
+    """
+    Stores game settings specifically
+    Example:
+    JSON
+    {
+        "asteroid_count": 200,
+        "asteroid_mass_min": 20.0,
+        "asteroid_mass_max": 200.0,
+        ...
+    }
+    """
     class Meta:
         verbose_name = _("Game Settings")
         verbose_name_plural = _("Game Settings")
 
 
+class SpaceSettings(Settings):
+    """
+    Stores space settings specifically
+    Example:
+    JSON
+    {
+        "space_width": 1500.0,
+        "space_depth": 1500.0,
+        ...
+    }
+    """
+    class Meta:
+        verbose_name = _("Space Settings")
+        verbose_name_plural = _("Space Settings")
+
+
 class Snapshot(TimeStamped):
     state = jsonb.JSONField(_("Game State"), default={})
     game_time = models.FloatField(_("Game Time in Seconds"), default=0.0)
-    game = models.ForeignKey("Game")
-    space = models.ForeignKey("Space")
-    settings = models.ForeignKey("SpaceSettings")
+    game = models.ForeignKey("Game", null=True)
+    space = models.ForeignKey("Space", null=True)
+    settings = models.ForeignKey("SpaceSettings", null=True)
 
     def __init__(self, space):
         super(Snapshot, self).__init__()
         self.space = space
         self.game = space.game
         self.settings = space.settings
+        self.game_time = 0.0
         self.new_state()
 
     def new_state(self):
@@ -120,24 +151,25 @@ class Space(TimeStamped):
         ordering = ["-created"]
 
     game = models.ForeignKey("Game")
-    initial_snapshot = models.ForeignKey("Snapshot")
+    initial_snapshot = models.ForeignKey("Snapshot", related_name="+")
     settings = models.ForeignKey("SpaceSettings")
     seed = models.CharField(_("Random Seed"), max_length=50)
 
-    def __init__(self, settings, seed=None):
+    def __init__(self, settings, seed=None, random_state=True):
         if type(settings) is not SpaceSettings:
             raise TypeError
         super(Space, self).__init__()
         self.settings = settings
-        self.space_width = self.get_settings('space_width', 100.0)
-        self.space_depth = self.get_settings('space_depth', 100.0)
+        self.space_width = settings.get_setting('space_width', 100.0)
+        self.space_depth = settings.get_setting('space_depth', 100.0)
         self.space_max_x = self.space_width/2
         self.space_min_x = -self.space_max_x
         self.space_max_y = self.space_depth/2
         self.space_min_y = -self.space_max_y
-
-        self.start_space(seed)
+        self.seed = None
+        self.game_space = None
         self.bodies = {}
+        self.start_space(seed, random_state)
 
     @staticmethod
     def new_seed():
@@ -148,9 +180,6 @@ class Space(TimeStamped):
             seed += string[pos]
         return seed
     
-    def get_setting(self, setting_name, default=None):
-        return self.settings.data[setting_name] or default
-
     def start_space(self, seed=None, random_state=True):
         self.seed = seed or Space.new_seed()
         random.seed(self.seed)
@@ -182,10 +211,4 @@ class Space(TimeStamped):
                                 asteroid_data['position'],
                                 asteroid_data['velocity'])
             self.bodies[asteroid.get_id()] = asteroid
-        pass
-
-
-class SpaceSettings(Settings):
-    class Meta:
-        verbose_name = _("Space Settings")
-        verbose_name_plural = _("Space Settings")
+        return snapshot
