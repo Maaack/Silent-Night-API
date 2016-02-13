@@ -81,9 +81,9 @@ class SpaceSettings(Settings):
 class Snapshot(TimeStamped):
     state = jsonb.JSONField(_("Game State"), default={})
     game_time = models.FloatField(_("Game Time in Seconds"), default=0.0)
-    game = models.ForeignKey("Game")
-    space = models.ForeignKey("Space")
-    settings = models.ForeignKey("SpaceSettings")
+    game = models.ForeignKey("Game", null=True)
+    space = models.ForeignKey("Space", null=True)
+    settings = models.ForeignKey("SpaceSettings", null=True)
 
     def __init__(self, space):
         super(Snapshot, self).__init__()
@@ -151,7 +151,7 @@ class Space(TimeStamped):
         ordering = ["-created"]
 
     game = models.ForeignKey("Game")
-    initial_snapshot = models.ForeignKey("Snapshot")
+    initial_snapshot = models.ForeignKey("Snapshot", related_name="+")
     settings = models.ForeignKey("SpaceSettings")
     seed = models.CharField(_("Random Seed"), max_length=50)
 
