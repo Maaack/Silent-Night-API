@@ -29,4 +29,4 @@ class SnapshotSerializer(serializers.ModelSerializer):
 class SpaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Snapshot
-        fields = ('settings', 'seed', )
+        fields = ('settings', 'seed')
