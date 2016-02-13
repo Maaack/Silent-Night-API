@@ -26,6 +26,10 @@ class Body(object):
         self.acceleration = numpy.array([0, 0])
         self.space = space
 
+    def get_id(self):
+        return self.__id
+
+    # Don't think I'll need any of this anymore now that I'm using pymunk for simulating the physics
     def updated_position(self, dtime=None):
         if dtime is not None:
             return self.position + (self.velocity * dtime) + 0.5*(self.acceleration * (dtime ** 2))
