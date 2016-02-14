@@ -29,6 +29,17 @@ class Game(TimeStamped):
     def __str__(self):
         return self.name + " | " + self.code
 
+    def __init__(self, name=None, settings=None):
+        super(Game, self).__init__()
+        self.space = None
+        self.name = name or 'New Game'
+        self.settings = settings or DefaultGameSettings.objects.first()
+        self.space_settings = SpaceSettings.objects.get(id=settings.get_setting('space_settings_id'))
+        # Eventually create the space
+
+    def create_space(self):
+        self.space = Space(self, self.settings['space_settings'])
+
 
 class Settings(TimeStamped, Ownable):
     """
@@ -54,12 +65,21 @@ class GameSettings(Settings):
         "asteroid_count": 200,
         "asteroid_mass_min": 20.0,
         "asteroid_mass_max": 200.0,
-        ...
+        "asteroid_radius_min": 25.0,
+        "asteroid_radius_max": 250.0,
+        "asteroid_velocity_min": 0.0,
+        "asteroid_velocity_max": 10.0
     }
     """
     class Meta:
         verbose_name = _("Game Settings")
         verbose_name_plural = _("Game Settings")
+
+
+class DefaultGameSettings(GameSettings):
+    class Meta:
+        verbose_name = _("Default Game Settings")
+        verbose_name_plural = _("Default Game Settings")
 
 
 class SpaceSettings(Settings):
@@ -76,6 +96,12 @@ class SpaceSettings(Settings):
     class Meta:
         verbose_name = _("Space Settings")
         verbose_name_plural = _("Space Settings")
+
+
+class DefaultSpaceSettings(SpaceSettings):
+    class Meta:
+        verbose_name = _("Default Space Settings")
+        verbose_name_plural = _("Default Space Settings")
 
 
 class Snapshot(TimeStamped):
@@ -155,11 +181,14 @@ class Space(TimeStamped):
     settings = models.ForeignKey("SpaceSettings")
     seed = models.CharField(_("Random Seed"), max_length=50)
 
-    def __init__(self, settings, seed=None, random_state=True):
-        if type(settings) is not SpaceSettings:
+    def __init__(self, game, settings=None, seed=None, random_state=True):
+        if type(game) is not Game:
+            raise TypeError
+        if settings is not None and type(settings) is not SpaceSettings:
             raise TypeError
         super(Space, self).__init__()
-        self.settings = settings
+        self.game = game
+        self.settings = settings or DefaultSpaceSettings.objects.first()
         self.space_width = settings.get_setting('space_width', 100.0)
         self.space_depth = settings.get_setting('space_depth', 100.0)
         self.space_max_x = self.space_width/2

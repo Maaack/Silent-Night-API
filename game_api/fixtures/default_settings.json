@@ -1,0 +1,45 @@
+[
+{
+  "model": "game_api.gamesettings",
+  "pk": 1,
+  "fields": {
+    "created": "2016-02-14T23:05:38.410Z",
+    "updated": "2016-02-14T23:05:38.410Z",
+    "user": null,
+    "name": "1st Game v0.0.1",
+    "data": {
+      "asteroid_mass_max": 200.0,
+      "asteroid_radius_min": 25.0,
+      "asteroid_velocity_max": 10.0,
+      "asteroid_count": 200,
+      "asteroid_mass_min": 20.0,
+      "asteroid_velocity_min": 0.0,
+      "asteroid_radius_max": 250.0
+    }
+  }
+},
+{
+  "model": "game_api.defaultgamesettings",
+  "pk": 1,
+  "fields": {}
+},
+{
+  "model": "game_api.spacesettings",
+  "pk": 1,
+  "fields": {
+    "created": "2016-02-14T23:01:10.123Z",
+    "updated": "2016-02-14T23:01:10.123Z",
+    "user": null,
+    "name": "1st Space v0.0.1",
+    "data": {
+      "space_depth": 1000.0,
+      "space_width": 1000.0
+    }
+  }
+},
+{
+  "model": "game_api.defaultspacesettings",
+  "pk": 1,
+  "fields": {}
+}
+]
