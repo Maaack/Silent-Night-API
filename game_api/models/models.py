@@ -95,7 +95,7 @@ class SpaceSettings(Settings):
         verbose_name_plural = _("Space Settings")
 
 
-class DefaultSpaceSettings(GameSettings):
+class DefaultSpaceSettings(SpaceSettings):
     class Meta:
         verbose_name = _("Default Space Settings")
         verbose_name_plural = _("Default Space Settings")
