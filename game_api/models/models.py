@@ -65,7 +65,10 @@ class GameSettings(Settings):
         "asteroid_count": 200,
         "asteroid_mass_min": 20.0,
         "asteroid_mass_max": 200.0,
-        ...
+        "asteroid_radius_min": 25.0,
+        "asteroid_radius_max": 250.0,
+        "asteroid_velocity_min": 0.0,
+        "asteroid_velocity_max": 10.0
     }
     """
     class Meta:
@@ -181,7 +184,7 @@ class Space(TimeStamped):
     def __init__(self, game, settings=None, seed=None, random_state=True):
         if type(game) is not Game:
             raise TypeError
-        if type(settings) is not SpaceSettings:
+        if settings is not None and type(settings) is not SpaceSettings:
             raise TypeError
         super(Space, self).__init__()
         self.game = game
