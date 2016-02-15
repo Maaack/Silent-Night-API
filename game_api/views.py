@@ -14,6 +14,7 @@ from .models.serializers import (PlayerSerializer,
                                  SpaceSerializer)
 from silent_night.mixins.views import (default_process_detail_request,
                                        default_process_list_request)
+from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions
 
@@ -164,3 +165,44 @@ def space_detail(request, pk):
     object_class = Space
 
     return default_process_detail_request(request, serializer_class, space)
+
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes((permissions.AllowAny,))
+def game_start_space(request, pk):
+    """
+    Make a game start a new Space
+    """
+    try:
+        game = Game.objects.get(pk=pk)
+    except Game.DoesNotExist:
+        return HttpResponse(status=404)
+    serializer_class = GameSerializer
+    object_class = Game
+
+    if request.method == 'POST':
+        game.create_space()
+        serializer = serializer_class(game)
+        return Response(serializer.data)
+
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes((permissions.AllowAny,))
+def space_start(request, pk):
+    """
+    Make a Space start itself up
+    """
+    try:
+        space = Space.objects.get(pk=pk)
+    except Space.DoesNotExist:
+        return HttpResponse(status=404)
+    serializer_class = SpaceSerializer
+    object_class = Space
+
+    if request.method == 'POST':
+        space.start_space()
+        serializer = serializer_class(space)
+        return Response(serializer.data)
+
