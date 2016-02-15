@@ -1,5 +1,7 @@
 from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
+from rest_framework import status
+from rest_framework.response import Response
 
 
 class JSONResponse(HttpResponse):
@@ -13,35 +15,31 @@ class JSONResponse(HttpResponse):
 
 
 def default_process_list_request(request, serializer_class, object_class):
-    from rest_framework.parsers import JSONParser
     if request.method == 'GET':
         objects = object_class.objects.all()
         serializer = serializer_class(objects, many=True)
-        return JSONResponse(serializer.data)
+        return Response(serializer.data)
 
     elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = serializer_class(data=data)
+        serializer = serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return JSONResponse(serializer.data, status=201)
-        return JSONResponse(serializer.errors, status=400)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 def default_process_detail_request(request, serializer_class, object_instance):
-    from rest_framework.parsers import JSONParser
     if request.method == 'GET':
         serializer = serializer_class(object_instance)
-        return JSONResponse(serializer.data)
+        return Response(serializer.data)
 
     elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = serializer_class(object_instance, data=data)
+        serializer = serializer_class(object_instance, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return JSONResponse(serializer.data)
-        return JSONResponse(serializer.errors, status=400)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
         object_instance.delete()
-        return HttpResponse(status=204)
+        return Response(status=status.HTTP_204_NO_CONTENT)

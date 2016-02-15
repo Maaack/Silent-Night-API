@@ -14,10 +14,14 @@ from .models.serializers import (PlayerSerializer,
                                  SpaceSerializer)
 from silent_night.mixins.views import (default_process_detail_request,
                                        default_process_list_request)
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework import permissions
 
 
 # Create your views here.
 @csrf_exempt
+@api_view(['GET', 'POST'])
+@permission_classes((permissions.AllowAny,))
 def player_list(request):
     """
     List all players, or create a new player.
@@ -28,6 +32,8 @@ def player_list(request):
 
     
 @csrf_exempt
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes((permissions.AllowAny,))
 def player_detail(request, pk):
     """
     Retrieve, update or delete a Player.
@@ -45,6 +51,8 @@ def player_detail(request, pk):
 # I want to get to a point of being able to interact by any means
 # and will restrict permissions once everything is working
 @csrf_exempt
+@api_view(['GET', 'POST'])
+@permission_classes((permissions.AllowAny,))
 def game_list(request):
     """
     List all players, or create a new game.
@@ -55,6 +63,8 @@ def game_list(request):
 
 
 @csrf_exempt
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes((permissions.AllowAny,))
 def game_detail(request, pk):
     """
     Retrieve, update or delete a game.
@@ -70,6 +80,8 @@ def game_detail(request, pk):
 
 
 @csrf_exempt
+@api_view(['GET', 'POST'])
+@permission_classes((permissions.AllowAny,))
 def settings_list(request):
     """
     List all players, or create a new snapshot.
@@ -80,6 +92,8 @@ def settings_list(request):
 
 
 @csrf_exempt
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes((permissions.AllowAny,))
 def settings_detail(request, pk):
     """
     Retrieve, update or delete a snapshot.
@@ -95,6 +109,8 @@ def settings_detail(request, pk):
 
 
 @csrf_exempt
+@api_view(['GET', 'POST'])
+@permission_classes((permissions.AllowAny,))
 def snapshot_list(request):
     """
     List all players, or create a new snapshot.
@@ -105,6 +121,8 @@ def snapshot_list(request):
 
 
 @csrf_exempt
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes((permissions.AllowAny,))
 def snapshot_detail(request, pk):
     """
     Retrieve, update or delete a snapshot.
@@ -120,6 +138,8 @@ def snapshot_detail(request, pk):
 
 
 @csrf_exempt
+@api_view(['GET', 'POST'])
+@permission_classes((permissions.AllowAny,))
 def space_list(request):
     """
     List all players, or create a new space.
@@ -130,6 +150,8 @@ def space_list(request):
 
 
 @csrf_exempt
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes((permissions.AllowAny,))
 def space_detail(request, pk):
     """
     Retrieve, update or delete a space.
