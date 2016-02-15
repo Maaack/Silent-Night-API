@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Player, Game, Settings, Snapshot
+from .models import Player, Game, Settings, Snapshot, Space
 
 
 class PlayerSerializer(serializers.ModelSerializer):
@@ -17,16 +17,16 @@ class GameSerializer(serializers.ModelSerializer):
 class SettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Settings
-        fields = ('name', 'data')
+        fields = ('id', 'name', 'data')
 
 
 class SnapshotSerializer(serializers.ModelSerializer):
     class Meta:
         model = Snapshot
-        fields = ('state', 'game_time', 'game', 'space')
+        fields = ('id', 'state', 'game_time', 'game', 'space')
 
 
 class SpaceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Snapshot
-        fields = ('settings', 'seed')
+        model = Space
+        fields = ('id', 'settings', 'game', 'seed')
