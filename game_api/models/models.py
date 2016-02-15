@@ -172,28 +172,9 @@ class Space(TimeStamped):
         ordering = ["-created"]
 
     game = models.ForeignKey("Game")
-    initial_snapshot = models.ForeignKey("Snapshot", related_name="+")
+    initial_snapshot = models.ForeignKey("Snapshot", related_name="+", null=True)
     settings = models.ForeignKey("SpaceSettings")
-    seed = models.CharField(_("Random Seed"), max_length=50)
-
-    def __init__(self, game, settings=None, seed=None, random_state=True):
-        if type(game) is not Game:
-            raise TypeError
-        if settings is not None and type(settings) is not SpaceSettings:
-            raise TypeError
-        super(Space, self).__init__()
-        self.game = game
-        self.settings = settings or DefaultSpaceSettings.objects.first()
-        self.space_width = settings.get_setting('space_width', 100.0)
-        self.space_depth = settings.get_setting('space_depth', 100.0)
-        self.space_max_x = self.space_width/2
-        self.space_min_x = -self.space_max_x
-        self.space_max_y = self.space_depth/2
-        self.space_min_y = -self.space_max_y
-        self.seed = None
-        self.game_space = None
-        self.bodies = {}
-        self.start_space(seed, random_state)
+    seed = models.CharField(_("Random Seed"), max_length=50, null=True)
 
     @staticmethod
     def new_seed():
@@ -205,7 +186,14 @@ class Space(TimeStamped):
         return seed
     
     def start_space(self, seed=None, random_state=True):
+        self.space_width = self.settings.get_setting('space_width', 100.0)
+        self.space_depth = self.settings.get_setting('space_depth', 100.0)
+        self.space_max_x = self.space_width/2
+        self.space_min_x = -self.space_max_x
+        self.space_max_y = self.space_depth/2
+        self.space_min_y = -self.space_max_y
         self.seed = seed or Space.new_seed()
+        self.bodies = {}
         random.seed(self.seed)
         self.game_space = pymunk.Space()
         if random_state:
