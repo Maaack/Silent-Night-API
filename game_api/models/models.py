@@ -29,14 +29,6 @@ class Game(TimeStamped):
     def __str__(self):
         return self.name + " | " + self.code
 
-    def __init__(self, name=None, settings=None):
-        super(Game, self).__init__()
-        self.space = None
-        self.name = name or 'New Game'
-        self.settings = settings or DefaultGameSettings.objects.first()
-        self.space_settings = SpaceSettings.objects.get(id=settings.get_setting('space_settings_id'))
-        # Eventually create the space
-
     def create_space(self):
         self.space = Space(self, self.settings['space_settings'])
 
@@ -53,7 +45,10 @@ class Settings(TimeStamped, Ownable):
     data = jsonb.JSONField(_("Data"), default={})
 
     def get_setting(self, setting_name, default=None):
-        return self.data[setting_name] or default
+        try:
+            return self.data[setting_name] or default
+        except KeyError:
+            return default
 
 
 class GameSettings(Settings):
