@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^games/$', views.game_list),
     url(r'^games/(?P<pk>[0-9]+)/$', views.game_detail),
     url(r'^games/(?P<pk>[0-9]+)/start_space/$', views.game_start_space),
+    url(r'^games/(?P<pk>[0-9]+)/snapshots/$', views.game_snapshot_list),
     url(r'^settings/$', views.settings_list),
     url(r'^settings/(?P<pk>[0-9]+)/$', views.settings_detail),
     url(r'^snapshots/$', views.snapshot_list),

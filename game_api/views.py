@@ -56,7 +56,7 @@ def player_detail(request, pk):
 @permission_classes((permissions.AllowAny,))
 def game_list(request):
     """
-    List all players, or create a new game.
+    List all games, or create a new game.
     """
     serializer_class = GameSerializer
     object_class = Game
@@ -85,7 +85,7 @@ def game_detail(request, pk):
 @permission_classes((permissions.AllowAny,))
 def settings_list(request):
     """
-    List all players, or create a new snapshot.
+    List all settings, or create a new settings.
     """
     serializer_class = SettingsSerializer
     object_class = Settings
@@ -114,7 +114,7 @@ def settings_detail(request, pk):
 @permission_classes((permissions.AllowAny,))
 def snapshot_list(request):
     """
-    List all players, or create a new snapshot.
+    List all snapshots, or create a new snapshot.
     """
     serializer_class = SnapshotSerializer
     object_class = Snapshot
@@ -139,11 +139,24 @@ def snapshot_detail(request, pk):
 
 
 @csrf_exempt
+@api_view(['GET'])
+@permission_classes((permissions.AllowAny,))
+def game_snapshot_list(request, pk):
+    """
+    List all snapshots in the game, or create a new snapshot.
+    """
+    if request.method == 'GET':
+        snapshots = Snapshot.objects.filter(game_id=pk)
+        serializer = SnapshotSerializer(snapshots, many=True)
+        return Response(serializer.data)
+
+
+@csrf_exempt
 @api_view(['GET', 'POST'])
 @permission_classes((permissions.AllowAny,))
 def space_list(request):
     """
-    List all players, or create a new space.
+    List all spaces, or create a new space.
     """
     serializer_class = SpaceSerializer
     object_class = Space
