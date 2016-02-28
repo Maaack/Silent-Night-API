@@ -23,39 +23,6 @@ from rest_framework import permissions
 
 # Create your views here.
 @csrf_exempt
-@api_view(['GET'])
-@permission_classes((permissions.AllowAny,))
-def game_snapshot_list(request, pk):
-    """
-    List all snapshots in the game, or create a new snapshot.
-    """
-    if request.method == 'GET':
-        snapshots = Snapshot.objects.filter(game_id=pk)
-        serializer = SnapshotSerializer(snapshots, many=True)
-        return Response(serializer.data)
-
-
-@csrf_exempt
-@api_view(['POST'])
-@permission_classes((permissions.AllowAny,))
-def game_start_space(request, pk):
-    """
-    Make a game start a new Space
-    """
-    try:
-        game = Game.objects.get(pk=pk)
-    except Game.DoesNotExist:
-        return HttpResponse(status=404)
-    serializer_class = GameSerializer
-    object_class = Game
-
-    if request.method == 'POST':
-        game.create_space()
-        serializer = serializer_class(game)
-        return Response(serializer.data)
-
-
-@csrf_exempt
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
 def space_start(request, pk):
@@ -92,51 +59,29 @@ class GameViewSet(BaseViewSet):
         serializer = SpaceSerializer(space, context={'request': request})
         return Response(serializer.data)
 
-class GameListView(BaseListView):
-    queryset = Game.objects.all()
-    serializer_class = GameSerializer
+
+class SpaceViewSet(BaseViewSet):
+    queryset = Space.objects.all()
+    serializer_class = SpaceSerializer
+
+    @detail_route()
+    def start(self, request, *args, **kwargs):
+        space = self.get_object()
+        space.start_space()
+        serializer = SpaceSerializer(space, context={'request': request})
+        return Response(serializer.data)
 
 
-class GameDetailView(BaseDetailView):
-    queryset = Game.objects.all()
-    serializer_class = GameSerializer
-
-
-class PlayerListView(BaseListView):
+class PlayerViewSet(BaseViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
 
 
-class PlayerDetailView(BaseDetailView):
-    queryset = Player.objects.all()
-    serializer_class = PlayerSerializer
-
-
-class SettingsListView(BaseListView):
+class SettingsViewSet(BaseViewSet):
     queryset = SpaceSettings.objects.all()
     serializer_class = SettingsSerializer
 
 
-class SettingsDetailView(BaseDetailView):
-    queryset = SpaceSettings.objects.all()
-    serializer_class = SettingsSerializer
-
-
-class SnapshotListView(BaseListView):
+class SnapshotViewSet(BaseViewSet):
     queryset = Snapshot.objects.all()
     serializer_class = SnapshotSerializer
-
-
-class SnapshotDetailView(BaseDetailView):
-    queryset = Snapshot.objects.all()
-    serializer_class = SnapshotSerializer
-
-
-class SpaceListView(BaseListView):
-    queryset = Space.objects.all()
-    serializer_class = SpaceSerializer
-
-
-class SpaceDetailView(BaseDetailView):
-    queryset = Space.objects.all()
-    serializer_class = SpaceSerializer
