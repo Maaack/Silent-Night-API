@@ -35,6 +35,7 @@ class Game(TimeStamped):
         self.space.game = self
         self.space.settings_id = self.settings.get_setting('space_settings_id')
         self.space.save()
+        return self.space
 
 
 class Settings(TimeStamped, Ownable):

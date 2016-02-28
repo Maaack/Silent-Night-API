@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListCreateAPIView
+from rest_framework.viewsets import ModelViewSet
 
 
 class JSONResponse(HttpResponse):
@@ -58,6 +59,16 @@ class BaseListView(ListCreateAPIView):
 
 
 class BaseDetailView(RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete an object instance.
+    """
+    permission_classes = (AllowAny,)
+
+    class Meta:
+        abstract = True
+
+
+class BaseViewSet(ModelViewSet):
     """
     Retrieve, update or delete an object instance.
     """

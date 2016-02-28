@@ -14,9 +14,10 @@ from .models.serializers import (PlayerSerializer,
                                  SnapshotSerializer,
                                  SpaceSerializer)
 from silent_night.mixins.views import (BaseListView,
-                                       BaseDetailView)
+                                       BaseDetailView,
+                                       BaseViewSet)
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, detail_route
 from rest_framework import permissions
 
 
@@ -73,6 +74,23 @@ def space_start(request, pk):
         serializer = serializer_class(space)
         return Response(serializer.data)
 
+
+class GameViewSet(BaseViewSet):
+    queryset = Game.objects.all()
+    serializer_class = GameSerializer
+
+    @detail_route()
+    def snapshots(self, request, *args, **kwargs):
+        game = self.get_object()
+        serializer = SnapshotSerializer(game.snapshot_set, context={'request': request}, many=True)
+        return Response(serializer.data)
+
+    @detail_route()
+    def start_space(self, request, *args, **kwargs):
+        game = self.get_object()
+        space = game.create_space()
+        serializer = SpaceSerializer(space, context={'request': request})
+        return Response(serializer.data)
 
 class GameListView(BaseListView):
     queryset = Game.objects.all()
