@@ -6,133 +6,28 @@ from .models import (Player,
                      Game,
                      Snapshot,
                      Settings,
+                     SpaceSettings,
                      Space)
 from .models.serializers import (PlayerSerializer,
                                  GameSerializer,
-                                 SettingsSerializer,
+                                 SpaceSettingsSerializer,
                                  SnapshotSerializer,
                                  SpaceSerializer)
-from silent_night.mixins.views import (default_process_detail_request,
-                                       default_process_list_request)
+from silent_night.mixins.views import (BaseListView,
+                                       BaseDetailView,
+                                       BaseViewSet)
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes, detail_route
+from rest_framework import permissions
 
 
 # Create your views here.
 @csrf_exempt
-def player_list(request):
+@api_view(['POST'])
+@permission_classes((permissions.AllowAny,))
+def space_start(request, pk):
     """
-    List all players, or create a new player.
-    """
-    serializer_class = PlayerSerializer
-    object_class = Player
-    return default_process_list_request(request, serializer_class, object_class)
-
-    
-@csrf_exempt
-def player_detail(request, pk):
-    """
-    Retrieve, update or delete a Player.
-    """
-    try:
-        player = Player.objects.get(pk=pk)
-    except Player.DoesNotExist:
-        return HttpResponse(status=404)
-    serializer_class = PlayerSerializer
-    object_class = Player
-
-    return default_process_detail_request(request, serializer_class, player)
-
-# Giving way too many permissions for now
-# I want to get to a point of being able to interact by any means
-# and will restrict permissions once everything is working
-@csrf_exempt
-def game_list(request):
-    """
-    List all players, or create a new game.
-    """
-    serializer_class = GameSerializer
-    object_class = Game
-    return default_process_list_request(request, serializer_class, object_class)
-
-
-@csrf_exempt
-def game_detail(request, pk):
-    """
-    Retrieve, update or delete a game.
-    """
-    try:
-        game = Game.objects.get(pk=pk)
-    except Game.DoesNotExist:
-        return HttpResponse(status=404)
-    serializer_class = GameSerializer
-    object_class = Game
-
-    return default_process_detail_request(request, serializer_class, game)
-
-
-@csrf_exempt
-def settings_list(request):
-    """
-    List all players, or create a new snapshot.
-    """
-    serializer_class = SettingsSerializer
-    object_class = Settings
-    return default_process_list_request(request, serializer_class, object_class)
-
-
-@csrf_exempt
-def settings_detail(request, pk):
-    """
-    Retrieve, update or delete a snapshot.
-    """
-    try:
-        settings = Settings.objects.get(pk=pk)
-    except Settings.DoesNotExist:
-        return HttpResponse(status=404)
-    serializer_class = SettingsSerializer
-    object_class = Settings
-
-    return default_process_detail_request(request, serializer_class, settings)
-
-
-@csrf_exempt
-def snapshot_list(request):
-    """
-    List all players, or create a new snapshot.
-    """
-    serializer_class = SnapshotSerializer
-    object_class = Snapshot
-    return default_process_list_request(request, serializer_class, object_class)
-
-
-@csrf_exempt
-def snapshot_detail(request, pk):
-    """
-    Retrieve, update or delete a snapshot.
-    """
-    try:
-        snapshot = Snapshot.objects.get(pk=pk)
-    except Snapshot.DoesNotExist:
-        return HttpResponse(status=404)
-    serializer_class = SnapshotSerializer
-    object_class = Snapshot
-
-    return default_process_detail_request(request, serializer_class, snapshot)
-
-
-@csrf_exempt
-def space_list(request):
-    """
-    List all players, or create a new space.
-    """
-    serializer_class = SpaceSerializer
-    object_class = Space
-    return default_process_list_request(request, serializer_class, object_class)
-
-
-@csrf_exempt
-def space_detail(request, pk):
-    """
-    Retrieve, update or delete a space.
+    Make a Space start itself up
     """
     try:
         space = Space.objects.get(pk=pk)
@@ -141,4 +36,52 @@ def space_detail(request, pk):
     serializer_class = SpaceSerializer
     object_class = Space
 
-    return default_process_detail_request(request, serializer_class, space)
+    if request.method == 'POST':
+        space.start_space()
+        serializer = serializer_class(space)
+        return Response(serializer.data)
+
+
+class GameViewSet(BaseViewSet):
+    queryset = Game.objects.all()
+    serializer_class = GameSerializer
+
+    @detail_route()
+    def snapshots(self, request, *args, **kwargs):
+        game = self.get_object()
+        serializer = SnapshotSerializer(game.snapshot_set, context={'request': request}, many=True)
+        return Response(serializer.data)
+
+    @detail_route()
+    def start_space(self, request, *args, **kwargs):
+        game = self.get_object()
+        space = game.create_space()
+        serializer = SpaceSerializer(space, context={'request': request})
+        return Response(serializer.data)
+
+
+class SpaceViewSet(BaseViewSet):
+    queryset = Space.objects.all()
+    serializer_class = SpaceSerializer
+
+    @detail_route()
+    def start(self, request, *args, **kwargs):
+        space = self.get_object()
+        space.start_space()
+        serializer = SpaceSerializer(space, context={'request': request})
+        return Response(serializer.data)
+
+
+class PlayerViewSet(BaseViewSet):
+    queryset = Player.objects.all()
+    serializer_class = PlayerSerializer
+
+
+class SpaceSettingsViewSet(BaseViewSet):
+    queryset = SpaceSettings.objects.all()
+    serializer_class = SpaceSettingsSerializer
+
+
+class SnapshotViewSet(BaseViewSet):
+    queryset = Snapshot.objects.all()
+    serializer_class = SnapshotSerializer

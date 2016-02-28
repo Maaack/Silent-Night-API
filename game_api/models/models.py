@@ -1,4 +1,5 @@
 import numpy
+import numpy.linalg
 import pymunk
 import random
 import math
@@ -30,7 +31,11 @@ class Game(TimeStamped):
         return self.name + " | " + self.code
 
     def create_space(self):
-        self.space = Space(self, self.settings['space_settings'])
+        self.space = Space()
+        self.space.game = self
+        self.space.settings_id = self.settings.get_setting('space_settings_id')
+        self.space.save()
+        return self.space
 
 
 class Settings(TimeStamped, Ownable):
@@ -106,13 +111,10 @@ class Snapshot(TimeStamped):
     space = models.ForeignKey("Space", null=True)
     settings = models.ForeignKey("SpaceSettings", null=True)
 
-    def __init__(self, space):
-        super(Snapshot, self).__init__()
-        self.space = space
-        self.game = space.game
-        self.settings = space.settings
-        self.game_time = 0.0
-        self.new_state()
+    def __init__(self, *args, **kwargs):
+        super(Snapshot, self).__init__(*args, **kwargs)
+        self.game = self.space.game
+        self.settings = self.space.settings
 
     def new_state(self):
         self.state = {}
@@ -129,6 +131,10 @@ class RandomSnapshot(Snapshot):
 
     def add_random_asteroids(self, state):
         game_settings = self.game.settings
+        try:
+            state['asteroids']
+        except KeyError:
+            state['asteroids'] = []
         asteroid_count = game_settings.get_setting('asteroid_count', 100)
         asteroid_mass_min = game_settings.get_setting('asteroid_mass_min', 1.0)
         asteroid_mass_max = game_settings.get_setting('asteroid_mass_max', 100.0)
@@ -160,7 +166,7 @@ class RandomSnapshot(Snapshot):
         new_x = math.sin(new_angle)
         new_y = math.cos(new_angle)
         new_vector = numpy.array([new_x, new_y])
-        new_vector.linalg.normalize()
+        new_vector = numpy.linalg.norm(new_vector)
         new_vector *= random.randrange(min_velocity, max_velocity)
         return new_vector
 
@@ -201,26 +207,32 @@ class Space(TimeStamped):
         else:
             snapshot = self.start_new_snapshot()
 
+        snapshot.new_state()
+        snapshot.save()
         self.read_snapshot(snapshot)
+        self.initial_snapshot = snapshot
         return self.game_space
 
     def start_new_snapshot(self):
-        self.initial_snapshot = Snapshot(self)
+        self.initial_snapshot = Snapshot(space=self)
         return self.initial_snapshot
 
     def start_random_snapshot(self):
-        self.initial_snapshot = RandomSnapshot(self)
+        self.initial_snapshot = RandomSnapshot(space=self)
         return self.initial_snapshot
 
     def read_snapshot(self, snapshot):
         # Just reads in asteroids for now. Which are just circles.
         from .classes import Asteroid
         json_data = snapshot.state
-        for asteroid_data in json_data['asteroids']:
-            asteroid = Asteroid(self,
-                                asteroid_data['radius'],
-                                asteroid_data['mass'],
-                                asteroid_data['position'],
-                                asteroid_data['velocity'])
-            self.bodies[asteroid.get_id()] = asteroid
+        try:
+            for asteroid_data in json_data['asteroids']:
+                asteroid = Asteroid(self,
+                                    asteroid_data['radius'],
+                                    asteroid_data['mass'],
+                                    asteroid_data['position'],
+                                    asteroid_data['velocity'])
+                self.bodies[asteroid.get_id()] = asteroid
+        except KeyError:
+            print("JSON Data does not have 'asteroids' %s " % (json_data,))
         return snapshot

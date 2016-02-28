@@ -1,15 +1,14 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 from game_api import views
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register(r'games', views.GameViewSet)
+router.register(r'players', views.PlayerViewSet)
+router.register(r'space_settings', views.SpaceSettingsViewSet)
+router.register(r'snapshots', views.SnapshotViewSet)
+router.register(r'spaces', views.SpaceViewSet)
 
 urlpatterns = [
-    url(r'^players/$', views.player_list),
-    url(r'^players/(?P<pk>[0-9]+)/$', views.player_detail),
-    url(r'^games/$', views.game_list),
-    url(r'^games/(?P<pk>[0-9]+)/$', views.game_detail),
-    url(r'^settings/$', views.settings_list),
-    url(r'^settings/(?P<pk>[0-9]+)/$', views.settings_detail),
-    url(r'^snapshots/$', views.snapshot_list),
-    url(r'^snapshots/(?P<pk>[0-9]+)/$', views.snapshot_detail),
-    url(r'^spaces/$', views.space_list),
-    url(r'^spaces/(?P<pk>[0-9]+)/$', views.space_detail),
+    url(r'^', include(router.urls)),
 ]
