@@ -10,7 +10,7 @@ from .models import (Player,
                      Space)
 from .models.serializers import (PlayerSerializer,
                                  GameSerializer,
-                                 SettingsSerializer,
+                                 SpaceSettingsSerializer,
                                  SnapshotSerializer,
                                  SpaceSerializer)
 from silent_night.mixins.views import (BaseListView,
@@ -77,9 +77,9 @@ class PlayerViewSet(BaseViewSet):
     serializer_class = PlayerSerializer
 
 
-class SettingsViewSet(BaseViewSet):
+class SpaceSettingsViewSet(BaseViewSet):
     queryset = SpaceSettings.objects.all()
-    serializer_class = SettingsSerializer
+    serializer_class = SpaceSettingsSerializer
 
 
 class SnapshotViewSet(BaseViewSet):

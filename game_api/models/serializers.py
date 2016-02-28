@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Player, Game, Settings, Snapshot, Space
+from .models import Player, Game, SpaceSettings, Snapshot, Space
 
 
 class PlayerSerializer(serializers.ModelSerializer):
@@ -16,9 +16,9 @@ class GameSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'code', 'name', 'settings', 'space_set', 'snapshot_set')
 
 
-class SettingsSerializer(serializers.HyperlinkedModelSerializer):
+class SpaceSettingsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Settings
+        model = SpaceSettings
         fields = ('id', 'name', 'data')
 
 
