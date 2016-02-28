@@ -6,6 +6,7 @@ from .models import (Player,
                      Game,
                      Snapshot,
                      Settings,
+                     SpaceSettings,
                      Space)
 from .models.serializers import (PlayerSerializer,
                                  GameSerializer,
@@ -16,7 +17,6 @@ from silent_night.mixins.views import (default_process_detail_request,
                                        default_process_list_request,
                                        BaseListView,
                                        BaseDetailView)
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions
@@ -77,50 +77,50 @@ def space_start(request, pk):
 
 
 class GameListView(BaseListView):
-    object_class = Game
+    queryset = Game.objects.all()
     serializer_class = GameSerializer
 
 
 class GameDetailView(BaseDetailView):
-    object_class = Game
+    queryset = Game.objects.all()
     serializer_class = GameSerializer
 
 
 class PlayerListView(BaseListView):
-    object_class = Player
+    queryset = Player.objects.all()
     serializer_class = PlayerSerializer
 
 
 class PlayerDetailView(BaseDetailView):
-    object_class = Player
+    queryset = Player.objects.all()
     serializer_class = PlayerSerializer
 
 
 class SettingsListView(BaseListView):
-    object_class = Settings
+    queryset = SpaceSettings.objects.all()
     serializer_class = SettingsSerializer
 
 
 class SettingsDetailView(BaseDetailView):
-    object_class = Settings
+    queryset = SpaceSettings.objects.all()
     serializer_class = SettingsSerializer
 
 
 class SnapshotListView(BaseListView):
-    object_class = Snapshot
+    queryset = Snapshot.objects.all()
     serializer_class = SnapshotSerializer
 
 
 class SnapshotDetailView(BaseDetailView):
-    object_class = Snapshot
+    queryset = Snapshot.objects.all()
     serializer_class = SnapshotSerializer
 
 
 class SpaceListView(BaseListView):
-    object_class = Snapshot
-    serializer_class = SnapshotSerializer
+    queryset = Space.objects.all()
+    serializer_class = SpaceSerializer
 
 
 class SpaceDetailView(BaseDetailView):
-    object_class = Snapshot
-    serializer_class = SnapshotSerializer
+    queryset = Space.objects.all()
+    serializer_class = SpaceSerializer
