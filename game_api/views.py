@@ -13,9 +13,7 @@ from .models.serializers import (PlayerSerializer,
                                  SettingsSerializer,
                                  SnapshotSerializer,
                                  SpaceSerializer)
-from silent_night.mixins.views import (default_process_detail_request,
-                                       default_process_list_request,
-                                       BaseListView,
+from silent_night.mixins.views import (BaseListView,
                                        BaseDetailView)
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
