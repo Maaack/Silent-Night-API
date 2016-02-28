@@ -13,131 +13,16 @@ from .models.serializers import (PlayerSerializer,
                                  SnapshotSerializer,
                                  SpaceSerializer)
 from silent_night.mixins.views import (default_process_detail_request,
-                                       default_process_list_request)
+                                       default_process_list_request,
+                                       BaseListView,
+                                       BaseDetailView)
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions
 
 
 # Create your views here.
-@csrf_exempt
-@api_view(['GET', 'POST'])
-@permission_classes((permissions.AllowAny,))
-def player_list(request):
-    """
-    List all players, or create a new player.
-    """
-    serializer_class = PlayerSerializer
-    object_class = Player
-    return default_process_list_request(request, serializer_class, object_class)
-
-    
-@csrf_exempt
-@api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes((permissions.AllowAny,))
-def player_detail(request, pk):
-    """
-    Retrieve, update or delete a Player.
-    """
-    try:
-        player = Player.objects.get(pk=pk)
-    except Player.DoesNotExist:
-        return HttpResponse(status=404)
-    serializer_class = PlayerSerializer
-    object_class = Player
-
-    return default_process_detail_request(request, serializer_class, player)
-
-# Giving way too many permissions for now
-# I want to get to a point of being able to interact by any means
-# and will restrict permissions once everything is working
-@csrf_exempt
-@api_view(['GET', 'POST'])
-@permission_classes((permissions.AllowAny,))
-def game_list(request):
-    """
-    List all games, or create a new game.
-    """
-    serializer_class = GameSerializer
-    object_class = Game
-    return default_process_list_request(request, serializer_class, object_class)
-
-
-@csrf_exempt
-@api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes((permissions.AllowAny,))
-def game_detail(request, pk):
-    """
-    Retrieve, update or delete a game.
-    """
-    try:
-        game = Game.objects.get(pk=pk)
-    except Game.DoesNotExist:
-        return HttpResponse(status=404)
-    serializer_class = GameSerializer
-    object_class = Game
-
-    return default_process_detail_request(request, serializer_class, game)
-
-
-@csrf_exempt
-@api_view(['GET', 'POST'])
-@permission_classes((permissions.AllowAny,))
-def settings_list(request):
-    """
-    List all settings, or create a new settings.
-    """
-    serializer_class = SettingsSerializer
-    object_class = Settings
-    return default_process_list_request(request, serializer_class, object_class)
-
-
-@csrf_exempt
-@api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes((permissions.AllowAny,))
-def settings_detail(request, pk):
-    """
-    Retrieve, update or delete a snapshot.
-    """
-    try:
-        settings = Settings.objects.get(pk=pk)
-    except Settings.DoesNotExist:
-        return HttpResponse(status=404)
-    serializer_class = SettingsSerializer
-    object_class = Settings
-
-    return default_process_detail_request(request, serializer_class, settings)
-
-
-@csrf_exempt
-@api_view(['GET', 'POST'])
-@permission_classes((permissions.AllowAny,))
-def snapshot_list(request):
-    """
-    List all snapshots, or create a new snapshot.
-    """
-    serializer_class = SnapshotSerializer
-    object_class = Snapshot
-    return default_process_list_request(request, serializer_class, object_class)
-
-
-@csrf_exempt
-@api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes((permissions.AllowAny,))
-def snapshot_detail(request, pk):
-    """
-    Retrieve, update or delete a snapshot.
-    """
-    try:
-        snapshot = Snapshot.objects.get(pk=pk)
-    except Snapshot.DoesNotExist:
-        return HttpResponse(status=404)
-    serializer_class = SnapshotSerializer
-    object_class = Snapshot
-
-    return default_process_detail_request(request, serializer_class, snapshot)
-
-
 @csrf_exempt
 @api_view(['GET'])
 @permission_classes((permissions.AllowAny,))
@@ -149,35 +34,6 @@ def game_snapshot_list(request, pk):
         snapshots = Snapshot.objects.filter(game_id=pk)
         serializer = SnapshotSerializer(snapshots, many=True)
         return Response(serializer.data)
-
-
-@csrf_exempt
-@api_view(['GET', 'POST'])
-@permission_classes((permissions.AllowAny,))
-def space_list(request):
-    """
-    List all spaces, or create a new space.
-    """
-    serializer_class = SpaceSerializer
-    object_class = Space
-    return default_process_list_request(request, serializer_class, object_class)
-
-
-@csrf_exempt
-@api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes((permissions.AllowAny,))
-def space_detail(request, pk):
-    """
-    Retrieve, update or delete a space.
-    """
-    try:
-        space = Space.objects.get(pk=pk)
-    except Space.DoesNotExist:
-        return HttpResponse(status=404)
-    serializer_class = SpaceSerializer
-    object_class = Space
-
-    return default_process_detail_request(request, serializer_class, space)
 
 
 @csrf_exempt
@@ -219,3 +75,52 @@ def space_start(request, pk):
         serializer = serializer_class(space)
         return Response(serializer.data)
 
+
+class GameListView(BaseListView):
+    object_class = Game
+    serializer_class = GameSerializer
+
+
+class GameDetailView(BaseDetailView):
+    object_class = Game
+    serializer_class = GameSerializer
+
+
+class PlayerListView(BaseListView):
+    object_class = Player
+    serializer_class = PlayerSerializer
+
+
+class PlayerDetailView(BaseDetailView):
+    object_class = Player
+    serializer_class = PlayerSerializer
+
+
+class SettingsListView(BaseListView):
+    object_class = Settings
+    serializer_class = SettingsSerializer
+
+
+class SettingsDetailView(BaseDetailView):
+    object_class = Settings
+    serializer_class = SettingsSerializer
+
+
+class SnapshotListView(BaseListView):
+    object_class = Snapshot
+    serializer_class = SnapshotSerializer
+
+
+class SnapshotDetailView(BaseDetailView):
+    object_class = Snapshot
+    serializer_class = SnapshotSerializer
+
+
+class SpaceListView(BaseListView):
+    object_class = Snapshot
+    serializer_class = SnapshotSerializer
+
+
+class SpaceDetailView(BaseDetailView):
+    object_class = Snapshot
+    serializer_class = SnapshotSerializer
