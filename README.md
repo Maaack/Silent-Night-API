@@ -5,6 +5,17 @@ An API into a stealth/discovery space combat game.
 Multi-player stealth combat asteroids game. Game world is simulated on the server, in brief snapshots done by request. The player is given a small view into the world through the game API, that allows them to control their ship with a range of commands.
 
 # Environment Setup
+Docker
+
+```
+$ sudo apt-get install docker
+$ sudo apt-get install docker-compose
+$ git clone https://{{YOUR_USERNAME}}@github.org/Maaack/Silent-Night-API.git
+$ cd Silent-Night-Api
+$ sudo docker-compose up
+```
+
+
 Linux - Ubuntu
 ```
 $ sudo apt-get install postgresql       # PostgreSQL
