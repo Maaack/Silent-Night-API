@@ -8,9 +8,11 @@ Multi-player stealth combat asteroids game. Game world is simulated on the serve
 Docker
 
 ```
-sudo apt-get install docker
-sudo apt-get install docker-compose
-docker pull maaack/silent-night-api
+$ sudo apt-get install docker
+$ sudo apt-get install docker-compose
+$ git clone https://{{YOUR_USERNAME}}@github.org/Maaack/Silent-Night-API.git
+$ cd Silent-Night-Api
+$ sudo docker-compose up
 ```
 
 
