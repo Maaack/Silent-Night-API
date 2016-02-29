@@ -6,7 +6,8 @@ import math
 from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
 
-from silent_night.mixins.models import TimeStamped, Owned, Ownable
+from silent_night.mixins.models import TimeStamped, Owned
+from game_api.models.mixins import Settings
 from django.contrib.postgres.fields import jsonb
 
 
@@ -37,23 +38,12 @@ class Game(TimeStamped):
         self.space.save()
         return self.space
 
-
-class Settings(TimeStamped, Ownable):
-    """
-    Stores settings in a JSON object
-    """
-    class Meta:
-        abstract = True
-        ordering = ["-created"]
-
-    name = models.CharField(_("Name"), max_length=50, blank=True, null=True)
-    data = jsonb.JSONField(_("Data"), default={})
-
-    def get_setting(self, setting_name, default=None):
+    def save(self, *args, **kwargs):
         try:
-            return self.data[setting_name] or default
-        except KeyError:
-            return default
+            self.settings
+        except GameSettings.DoesNotExist:
+            self.settings = GameSettings.objects.first()
+        return super(Game, self).save(*args, **kwargs)
 
 
 class GameSettings(Settings):
@@ -181,6 +171,13 @@ class Space(TimeStamped):
     initial_snapshot = models.ForeignKey("Snapshot", related_name="+", null=True)
     settings = models.ForeignKey("SpaceSettings")
     seed = models.CharField(_("Random Seed"), max_length=50, null=True)
+
+    def save(self, *args, **kwargs):
+        try:
+            self.settings
+        except SpaceSettings.DoesNotExist:
+            self.settings = SpaceSettings.objects.first()
+        return super(Space, self).save(*args, **kwargs)
 
     @staticmethod
     def new_seed():

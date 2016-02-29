@@ -6,42 +6,21 @@ from .models import (Player,
                      Game,
                      Snapshot,
                      Settings,
+                     GameSettings,
                      SpaceSettings,
                      Space)
 from .models.serializers import (PlayerSerializer,
                                  GameSerializer,
+                                 GameSettingsSerializer,
                                  SpaceSettingsSerializer,
                                  SnapshotSerializer,
                                  SpaceSerializer)
-from silent_night.mixins.views import (BaseListView,
-                                       BaseDetailView,
-                                       BaseViewSet)
+from silent_night.mixins.views import BaseViewSet
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes, detail_route
-from rest_framework import permissions
+from rest_framework.decorators import detail_route
 
 
 # Create your views here.
-@csrf_exempt
-@api_view(['POST'])
-@permission_classes((permissions.AllowAny,))
-def space_start(request, pk):
-    """
-    Make a Space start itself up
-    """
-    try:
-        space = Space.objects.get(pk=pk)
-    except Space.DoesNotExist:
-        return HttpResponse(status=404)
-    serializer_class = SpaceSerializer
-    object_class = Space
-
-    if request.method == 'POST':
-        space.start_space()
-        serializer = serializer_class(space)
-        return Response(serializer.data)
-
-
 class GameViewSet(BaseViewSet):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
@@ -75,6 +54,11 @@ class SpaceViewSet(BaseViewSet):
 class PlayerViewSet(BaseViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
+
+
+class GameSettingsViewSet(BaseViewSet):
+    queryset = GameSettings.objects.all()
+    serializer_class = GameSettingsSerializer
 
 
 class SpaceSettingsViewSet(BaseViewSet):
