@@ -8,13 +8,15 @@
     "user": null,
     "name": "1st Game v0.0.1",
     "data": {
-      "asteroid_mass_max": 200.0,
-      "asteroid_radius_min": 25.0,
+      "asteroid_mass_max": 100000.0,
+      "asteroid_mass_min": 10.0,
+      "asteroid_density_max": 5.32,
+      "asteroid_density_min": 1.38,
+      "asteroid_radius_max": 1000.0,
+      "asteroid_radius_min": 10.0,
       "asteroid_velocity_max": 10.0,
-      "asteroid_count": 200,
-      "asteroid_mass_min": 20.0,
       "asteroid_velocity_min": 0.0,
-      "asteroid_radius_max": 250.0
+      "asteroid_count": 200
     }
   }
 },
