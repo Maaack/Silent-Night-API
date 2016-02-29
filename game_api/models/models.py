@@ -156,9 +156,8 @@ class RandomSnapshot(Snapshot):
         new_x = math.sin(new_angle)
         new_y = math.cos(new_angle)
         new_vector = numpy.array([new_x, new_y])
-        new_vector = numpy.linalg.norm(new_vector)
         new_vector *= random.randrange(min_velocity, max_velocity)
-        return new_vector
+        return new_vector.tolist()
 
 
 class Space(TimeStamped):
