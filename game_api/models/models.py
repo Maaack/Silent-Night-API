@@ -1,6 +1,5 @@
 import numpy
 import numpy.linalg
-import pymunk
 import random
 import math
 from django.db import models
@@ -10,6 +9,7 @@ from silent_night.mixins.models import TimeStamped, Owned
 from game_api.models.mixins import Settings
 from django.contrib.postgres.fields import jsonb
 
+from Box2D import *
 
 class Player(TimeStamped, Owned):
     class Meta:
@@ -197,7 +197,7 @@ class Space(TimeStamped):
         self.seed = seed or Space.new_seed()
         self.bodies = {}
         random.seed(self.seed)
-        self.game_space = pymunk.Space()
+        self.game_space = b2World((0, 0), False)
         if random_state:
             snapshot = self.start_random_snapshot()
         else:

@@ -1,5 +1,5 @@
 import numpy
-import pymunk
+from Box2D import *
 from .models import Space
 
 
@@ -72,11 +72,9 @@ class RoundBody(Body):
     def __init__(self, space, radius, mass=None, position=None, velocity=None):
         super(RoundBody, self).__init__(space, mass, position, velocity)
         self.radius = radius
-        inertia = pymunk.moment_for_circle(self.mass, 0, self.radius)
-        self.game_body = pymunk.Body(self.mass, inertia)
-        self.game_body.position = self.position
-        self.game_shape = pymunk.Circle(self.game_body, self.radius)
-        self.space.game_space.add(self.game_body, self.game_shape)
+        self.game_body = space.game_space.CreateDynamicBody(position=position, mass=mass)
+        self.game_shape = self.game_body.CreateCircleFixture(radius=radius, friction=0.2, density=1.0)
+        self.game_body.linearVelocity = velocity
 
 
 class PolyBody(Body):
@@ -86,11 +84,11 @@ class PolyBody(Body):
     def __init__(self, space, vertices, mass=None, position=None, velocity=None):
         super(PolyBody, self).__init__(space, mass, position, velocity)
         self.vertices = vertices
-        inertia = pymunk.moment_for_poly(self.mass, self.vertices)
-        self.game_body = pymunk.Body(self.mass, inertia)
-        self.game_body.position = self.position
-        self.game_shape = pymunk.Poly(self.game_body, self.vertices)
-        self.space.game_space.add(self.game_body, self.game_shape)
+        self.game_shape = b2PolygonShape(vertices=vertices)
+        self.game_body = space.game_space.CreateDynamicBody(position=position,
+                                                            mass=mass,
+                                                            shapes=self.game_shape)
+        self.game_body.linearVelocity = velocity
 
 
 class Asteroid(RoundBody):
