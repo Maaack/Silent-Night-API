@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'numpy',
     'pymunk',
     'rest_framework',
+    'Box2D',
 ]
 
 MIDDLEWARE_CLASSES = [
